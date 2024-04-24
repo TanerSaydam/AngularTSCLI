@@ -3,6 +3,7 @@ import yargs from 'yargs';
 import fs from 'fs';
 import { exec } from 'child_process';
 import readline from 'readline';
+import { log } from 'console';
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -42,37 +43,34 @@ if(argv._.includes("new")){
     }else{
         createNewProject(projectName);
     }
+}else{
+    console.log("Geçersiz bir kod girdiniz. yardım için ts --help kodunu kullanabilirsiniz")
 }
 
 function createNewProject(projectName: string){
     fs.mkdirSync(projectName);
-    console.log("Proje kurulmaya başladı...");
+    console.log("Proje kalıbı indirilmeye başlandı...");
     exec(`git clone https://github.com/TanerSaydam/AngularAdminLTETemplate.git ${projectName}`, (error, stdout, stderr)=> {
         if(error){
             console.error(`Error: ${stdout}`)
-            return;
+            process.exit(1);
         }
 
-       console.log("Proje kuruldu");
+       console.log("Proje kalıbı indirildi");
        console.log("NPM paketleri indiriliyor...");
 
         exec(`cd ${projectName} && npm install`, (error, stdout, stderr)=> {
             if(error){
                 console.error(`Error: ${stdout}`)
-                return;
+                process.exit(1);
             }
     
             console.log("NPM paketleri indirildi");
             console.log("Son ayarlar yapılıyor...");
-            exec(`rm -rf ${projectName}/.git`, (error, stdout, stderr) => {
-                if (error) {
-                    console.error(`Error: ${error.message}`);
-                    return;
-                }
-
-                console.log("Proje başarıyla oluşturuldu.");
-                console.log("Çıkmak için bir tuşa basın.");
-            });
-        })
-    })
+            fs.rmdirSync(`${projectName}/.git`, { recursive: true });            
+            console.log("Proje başarıyla oluşturuldu.");
+            console.log(`cd ${projectName} komutuyla proje klasörüne gidip geliştirmeye başlayabilrisiniz. İyi çalışmalar.`);
+            process.exit(0);
+        });
+    });
 }

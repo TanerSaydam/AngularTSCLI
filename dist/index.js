@@ -45,31 +45,30 @@ if (argv._.includes("new")) {
         createNewProject(projectName_1);
     }
 }
+else {
+    console.log("Geçersiz bir kod girdiniz. yardım için ts --help kodunu kullanabilirsiniz");
+}
 function createNewProject(projectName) {
     fs_1.default.mkdirSync(projectName);
-    console.log("Proje kurulmaya başladı...");
+    console.log("Proje kalıbı indirilmeye başlandı...");
     (0, child_process_1.exec)("git clone https://github.com/TanerSaydam/AngularAdminLTETemplate.git ".concat(projectName), function (error, stdout, stderr) {
         if (error) {
             console.error("Error: ".concat(stdout));
-            return;
+            process.exit(1);
         }
-        console.log("Proje kuruldu");
+        console.log("Proje kalıbı indirildi");
         console.log("NPM paketleri indiriliyor...");
         (0, child_process_1.exec)("cd ".concat(projectName, " && npm install"), function (error, stdout, stderr) {
             if (error) {
                 console.error("Error: ".concat(stdout));
-                return;
+                process.exit(1);
             }
             console.log("NPM paketleri indirildi");
             console.log("Son ayarlar yapılıyor...");
-            (0, child_process_1.exec)("rm -rf ".concat(projectName, "/.git"), function (error, stdout, stderr) {
-                if (error) {
-                    console.error("Error: ".concat(error.message));
-                    return;
-                }
-                console.log("Proje başarıyla oluşturuldu.");
-                console.log("Çıkmak için bir tuşa basın.");
-            });
+            fs_1.default.rmdirSync("".concat(projectName, "/.git"), { recursive: true });
+            console.log("Proje başarıyla oluşturuldu.");
+            console.log("cd ".concat(projectName, " komutuyla proje klas\u00F6r\u00FCne gidip geli\u015Ftirmeye ba\u015Flayabilrisiniz. \u0130yi \u00E7al\u0131\u015Fmalar."));
+            process.exit(0);
         });
     });
 }

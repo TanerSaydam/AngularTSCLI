@@ -1,6 +1,6 @@
 {
   "name": "angular-ts-cli",
-  "version": "17.3.9",
+  "version": "17.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -15,8 +15,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^20.6.0",
-    "@types/yargs": "^17.0.24",
+    "@types/node": "^20.12.7",
+    "@types/yargs": "^17.0.32",
     "yargs": "^17.7.2"
   }
 }
