@@ -44,7 +44,8 @@ if(argv._.includes("new")){
         createNewProject(projectName);
     }
 }else{
-    console.log("Geçersiz bir kod girdiniz. yardım için ts --help kodunu kullanabilirsiniz")
+    console.log("Geçersiz bir kod girdiniz. yardım için ts --help kodunu kullanabilirsiniz");
+    process.exit(0);
 }
 
 function createNewProject(projectName: string){
@@ -53,7 +54,7 @@ function createNewProject(projectName: string){
     exec(`git clone https://github.com/TanerSaydam/AngularAdminLTETemplate.git ${projectName}`, (error, stdout, stderr)=> {
         if(error){
             console.error(`Error: ${stdout}`)
-            process.exit(1);
+            process.exit(0);
         }
 
        console.log("Proje kalıbı indirildi");
@@ -62,7 +63,7 @@ function createNewProject(projectName: string){
         exec(`cd ${projectName} && npm install`, (error, stdout, stderr)=> {
             if(error){
                 console.error(`Error: ${stdout}`)
-                process.exit(1);
+                process.exit(0);
             }
     
             console.log("NPM paketleri indirildi");

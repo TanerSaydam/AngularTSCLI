@@ -47,6 +47,7 @@ if (argv._.includes("new")) {
 }
 else {
     console.log("Geçersiz bir kod girdiniz. yardım için ts --help kodunu kullanabilirsiniz");
+    process.exit(0);
 }
 function createNewProject(projectName) {
     fs_1.default.mkdirSync(projectName);
@@ -54,14 +55,14 @@ function createNewProject(projectName) {
     (0, child_process_1.exec)("git clone https://github.com/TanerSaydam/AngularAdminLTETemplate.git ".concat(projectName), function (error, stdout, stderr) {
         if (error) {
             console.error("Error: ".concat(stdout));
-            process.exit(1);
+            process.exit(0);
         }
         console.log("Proje kalıbı indirildi");
         console.log("NPM paketleri indiriliyor...");
         (0, child_process_1.exec)("cd ".concat(projectName, " && npm install"), function (error, stdout, stderr) {
             if (error) {
                 console.error("Error: ".concat(stdout));
-                process.exit(1);
+                process.exit(0);
             }
             console.log("NPM paketleri indirildi");
             console.log("Son ayarlar yapılıyor...");
