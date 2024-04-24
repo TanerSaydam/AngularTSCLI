@@ -47,20 +47,29 @@ if (argv._.includes("new")) {
 }
 function createNewProject(projectName) {
     fs_1.default.mkdirSync(projectName);
+    console.log("Proje kurulmaya başladı...");
     (0, child_process_1.exec)("git clone https://github.com/TanerSaydam/AngularAdminLTETemplate.git ".concat(projectName), function (error, stdout, stderr) {
         if (error) {
             console.error("Error: ".concat(stdout));
             return;
         }
-        console.log("stdout: ".concat(stdout));
-        console.error("stderr: ".concat(stderr));
+        console.log("Proje kuruldu");
+        console.log("NPM paketleri indiriliyor...");
         (0, child_process_1.exec)("cd ".concat(projectName, " && npm install"), function (error, stdout, stderr) {
             if (error) {
                 console.error("Error: ".concat(stdout));
                 return;
             }
-            console.log("stdout: ".concat(stdout));
-            console.error("stderr: ".concat(stderr));
+            console.log("NPM paketleri indirildi");
+            console.log("Son ayarlar yapılıyor...");
+            (0, child_process_1.exec)("rm -rf ".concat(projectName, "/.git"), function (error, stdout, stderr) {
+                if (error) {
+                    console.error("Error: ".concat(error.message));
+                    return;
+                }
+                console.log("Proje başarıyla oluşturuldu.");
+                console.log("Çıkmak için bir tuşa basın.");
+            });
         });
     });
 }

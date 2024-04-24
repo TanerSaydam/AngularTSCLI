@@ -46,15 +46,15 @@ if(argv._.includes("new")){
 
 function createNewProject(projectName: string){
     fs.mkdirSync(projectName);
-
+    console.log("Proje kurulmaya başladı...");
     exec(`git clone https://github.com/TanerSaydam/AngularAdminLTETemplate.git ${projectName}`, (error, stdout, stderr)=> {
         if(error){
             console.error(`Error: ${stdout}`)
             return;
         }
 
-        console.log(`stdout: ${stdout}`);
-        console.error(`stderr: ${stderr}`);
+       console.log("Proje kuruldu");
+       console.log("NPM paketleri indiriliyor...");
 
         exec(`cd ${projectName} && npm install`, (error, stdout, stderr)=> {
             if(error){
@@ -62,8 +62,17 @@ function createNewProject(projectName: string){
                 return;
             }
     
-            console.log(`stdout: ${stdout}`);
-            console.error(`stderr: ${stderr}`);
+            console.log("NPM paketleri indirildi");
+            console.log("Son ayarlar yapılıyor...");
+            exec(`rm -rf ${projectName}/.git`, (error, stdout, stderr) => {
+                if (error) {
+                    console.error(`Error: ${error.message}`);
+                    return;
+                }
+
+                console.log("Proje başarıyla oluşturuldu.");
+                console.log("Çıkmak için bir tuşa basın.");
+            });
         })
     })
 }
