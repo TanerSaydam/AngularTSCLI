@@ -3,7 +3,13 @@ import yargs from 'yargs';
 import fs from 'fs';
 import { exec } from 'child_process';
 import readline from 'readline';
-import { log } from 'console';
+
+const green = "\x1b[32m";
+const yellow = "\x1b[33m";
+const reset = "\x1b[0m";
+
+let projectType = "";
+let projectName = "";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -29,48 +35,132 @@ const argv = yargs
     .argv as { [key: string]: unknown, _: string[]};
 
 if(argv._.includes("new")){
-    let projectName = argv.name as string;
-    let projectType = argv.type as string;
+    projectName = argv.name as string;
+    projectType = argv.template as string;
 
-    if(!projectType) projectType = "AdminLTE";
+    console.log(``);
 
     if(!projectName){
         rl.question("Lütfen bir proje adı girin:", (inputName: string)=> {
             projectName = inputName;
             rl.close();
             createNewProject(projectName);
-        })
-    }else{
+        });
+    } else {
         createNewProject(projectName);
     }
-}else{
-    console.log("Geçersiz bir kod girdiniz. yardım için ts --help kodunu kullanabilirsiniz");
+} else {
+    console.error("Geçersiz bir kod girdiniz. yardım için ts --help kodunu kullanabilirsiniz");
     process.exit(0);
 }
 
+const spinnerChars = ['|', '/', '-', '\\'];
+let spinnerIndex = 0;
+
+function startLoading(){
+    return setInterval(() => {
+        process.stdout.write(`\r${spinnerChars[spinnerIndex]}`);
+        spinnerIndex = (spinnerIndex + 1) % spinnerChars.length;
+    }, 100);
+}
+
+function stopLoading(interval: NodeJS.Timeout){
+    clearInterval(interval);
+    process.stdout.write('\r');
+};
+
 function createNewProject(projectName: string){
+    if(!projectType){
+        console.error("Geçersiz bir template adı girdiniz. Empty ya da AdminLTE yazmalısınız!");
+        process.exit(0);
+    }
+
     fs.mkdirSync(projectName);
-    console.log("Proje kalıbı indirilmeye başlandı...");
-    exec(`git clone https://github.com/TanerSaydam/AngularAdminLTETemplate.git ${projectName}`, (error, stdout, stderr)=> {
+    if(projectType === "AdminLTE"){
+        setupAngularAdminLTE();
+    } else if(projectType === "Empty"){
+        setupEmptyAngular();
+    } else {
+        console.log("Geçersiz bir kod girdiniz. yardım için ts --help kodunu kullanabilirsiniz");
+        process.exit(0);
+    }
+}
+
+function setupEmptyAngular(){
+    console.log("Proje GitHub reposu");    
+    console.log(`${yellow}https://github.com/TanerSaydam/EmptyAngularTemplate${reset}`);
+    console.log(``);    
+    console.log("Proje indiriliyor...");
+    let loaderInterval = startLoading();
+    exec(`git clone https://github.com/TanerSaydam/EmptyAngularTemplate.git ${projectName}`, (error, stdout, stderr)=> {
+        stopLoading(loaderInterval);
         if(error){
-            console.error(`Error: ${stdout}`)
+            console.error(`Error: ${stderr}`);
             process.exit(0);
         }
 
-       console.log("Proje kalıbı indirildi");
-       console.log("NPM paketleri indiriliyor...");
+        console.log(`${green}√ Proje indirildi${reset}`);
+        console.log("NPM paketleri indiriliyor...");
+        loaderInterval = startLoading();
 
         exec(`cd ${projectName} && npm install`, (error, stdout, stderr)=> {
+            stopLoading(loaderInterval);
             if(error){
-                console.error(`Error: ${stdout}`)
+                console.error(`Error: ${stderr}`);
                 process.exit(0);
             }
-    
-            console.log("NPM paketleri indirildi");
+
+            console.log(`${green}√ NPM paketleri indirildi${reset}`);
             console.log("Son ayarlar yapılıyor...");
             fs.rmdirSync(`${projectName}/.git`, { recursive: true });            
-            console.log("Proje başarıyla oluşturuldu.");
-            console.log(`cd ${projectName} komutuyla proje klasörüne gidip geliştirmeye başlayabilrisiniz. İyi çalışmalar.`);
+            console.log(`${green}√ Proje başarıyla oluşturuldu${reset}`);
+            console.log(``);
+            console.log(`${yellow}cd ${projectName}${reset}`);
+            console.log(`komutuyla proje klasörüne gidip geliştirmeye başlayabilirsiniz`);
+            console.log(``);
+            console.log(`${reset}İyi çalışmalar`);
+            console.log(`Taner Saydam${reset}`);
+
+            process.exit(0);
+        });
+    });
+}
+
+function setupAngularAdminLTE(){
+    console.log("Proje GitHub reposu");    
+    console.log(`${yellow}https://github.com/TanerSaydam/AngularAdminLTETemplate${reset}`);
+    console.log(``);    
+    console.log("Proje indiriliyor...");
+    let loaderInterval = startLoading();
+    exec(`git clone https://github.com/TanerSaydam/AngularAdminLTETemplate.git ${projectName}`, (error, stdout, stderr)=> {
+        stopLoading(loaderInterval);
+        if(error){
+            console.error(`Error: ${stderr}`);
+            process.exit(0);
+        }
+
+        console.log(`${green}√ Proje indirildi${reset}`);
+        console.log("NPM paketleri indiriliyor...");
+        loaderInterval = startLoading();
+
+        exec(`cd ${projectName} && npm install`, (error, stdout, stderr)=> {
+            stopLoading(loaderInterval);
+            if(error){
+                console.error(`Error: ${stderr}`);
+                process.exit(0);
+            }
+
+            console.log(`${green}√ NPM paketleri indirildi${reset}`);
+            console.log("Son ayarlar yapılıyor...");
+            fs.rmdirSync(`${projectName}/.git`, { recursive: true });            
+            console.log(`${green}√ Proje başarıyla oluşturuldu${reset}`);
+            console.log(``);
+            console.log(`${yellow}cd ${projectName}${reset}`);
+            console.log(`komutuyla proje klasörüne gidip geliştirmeye başlayabilirsiniz`);
+            console.log(``);
+            console.log(`${reset}İyi çalışmalar`);
+            console.log(`Taner Saydam${reset}`);
+
             process.exit(0);
         });
     });
